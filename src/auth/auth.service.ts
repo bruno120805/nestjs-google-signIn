@@ -10,12 +10,16 @@ import { JwtPayload } from './interfaces/jwt-payload';
 import { RegisterUserDto } from './dtos/register-user.dot';
 import { generateFromEmail } from 'unique-username-generator';
 import { User } from '@prisma/client';
+import { LoginUser } from './dtos/login-user.dto';
+import { UserService } from 'src/user/user.service';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
     private readonly prismaService: PrismaService,
+    private readonly userService: UserService,
   ) {}
 
   generateJwtToken(payload: JwtPayload) {
@@ -40,6 +44,17 @@ export class AuthService {
       id: userExists.id,
       email: userExists.email,
     });
+  }
+
+  async loginWithoutGoogle(loginData: LoginUser) {
+    const user = await this.findUserByEmail(loginData.email);
+
+    if (!user) throw new NotFoundException('User not found');
+
+    if (!bcrypt.compare(loginData.password, user.password))
+      throw new BadRequestException('Invalid credentials');
+
+    return user;
   }
 
   private async findUserByEmail(email: string): Promise<User> {

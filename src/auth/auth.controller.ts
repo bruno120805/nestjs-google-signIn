@@ -1,7 +1,9 @@
 import {
+  Body,
   Controller,
   Get,
   HttpStatus,
+  Post,
   Req,
   Res,
   UseGuards,
@@ -9,6 +11,7 @@ import {
 import { AuthService } from './auth.service';
 import { GoogleOAuthGuard } from './guards/google-oauth.guard';
 import { Response } from 'express';
+import { LoginUser } from './dtos/login-user.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -30,5 +33,10 @@ export class AuthController {
     });
 
     return res.status(HttpStatus.OK);
+  }
+
+  @Post('login')
+  loginWithoutGoogle(@Body() loginData: LoginUser) {
+    return this.authService.loginWithoutGoogle(loginData);
   }
 }
