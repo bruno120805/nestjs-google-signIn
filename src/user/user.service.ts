@@ -1,9 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import * as bcrypt from 'bcrypt';
-import { User } from '@prisma/client';
+import { Prisma, User } from '@prisma/client';
 
 @Injectable()
 export class UserService {
@@ -70,8 +74,11 @@ export class UserService {
   }
 
   private handleDBErrors(error: any): never {
-    if (error.code === 'P2002') {
-      throw new Error('User with that email already exists');
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      // Manejo de violación de unicidad para otros campos
+      if (error.code === 'P2002') {
+        throw new ConflictException("Email/password don't match");
+      }
     }
 
     if (error.message === 'User not found') {

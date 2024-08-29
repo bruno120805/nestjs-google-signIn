@@ -57,12 +57,30 @@ export class AuthService {
     return user;
   }
 
-  private async findUserByEmail(email: string): Promise<User> {
+  async registerUserWithoutGoogle(userData: RegisterUserDto) {
+    try {
+      const user = await this.userService.createUser(userData);
+
+      const accesToken = this.generateJwtToken({
+        id: user.id,
+        email: user.email,
+      });
+
+      return {
+        ...user,
+        accesToken,
+      };
+    } catch (error) {
+      this.handleDBErrors(error);
+    }
+  }
+
+  async findUserByEmail(email: string): Promise<User> {
     const user = await this.prismaService.user.findUnique({
       where: { email },
     });
 
-    if (!user) return null;
+    if (!user) throw new NotFoundException('Email not found');
 
     return user;
   }

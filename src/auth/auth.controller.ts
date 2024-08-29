@@ -12,6 +12,7 @@ import { AuthService } from './auth.service';
 import { GoogleOAuthGuard } from './guards/google-oauth.guard';
 import { Response } from 'express';
 import { LoginUser } from './dtos/login-user.dto';
+import { RegisterUserDto } from './dtos/register-user.dot';
 
 @Controller('auth')
 export class AuthController {
@@ -33,6 +34,11 @@ export class AuthController {
     });
 
     return res.status(HttpStatus.OK);
+  }
+
+  @Post('sign-up')
+  singUp(@Body() userData: RegisterUserDto) {
+    return this.authService.registerUserWithoutGoogle(userData);
   }
 
   @Post('login')

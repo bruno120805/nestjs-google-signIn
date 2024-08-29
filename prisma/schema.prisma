@@ -35,8 +35,9 @@ model Pets {
   name         String
   type         String
   breed        String
-  available    String[]       @default(["waiting"])
+  available    String[]       @default(["Waiting"])
   description  String
+  imageUrl     String?
   createdAt    DateTime       @default(now())
   updatedAt    DateTime       @updatedAt
   userId       String
@@ -54,6 +55,8 @@ model UserInCharge {
   pet       Pets     @relation(fields: [petId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  name      String
+  email     String
 
   @@map("users_in_charge")
 }
