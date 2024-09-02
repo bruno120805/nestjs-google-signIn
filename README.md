@@ -10,19 +10,20 @@
 4. Cambiar las variables de entorno
 5. Levantar la base de datos
 
-
 ## Env local
+
 Put your enviroment keys on the new .env
 
 ## Docker compose
+
 ```
 $ docker-compose up -d
 ```
 
 ## Running the app
 
-
 # Start running the app
+
 ```
-$ yarn run start:dev
+$ yarn  start:dev
 ```
