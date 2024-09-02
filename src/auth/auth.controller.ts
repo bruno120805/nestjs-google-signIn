@@ -17,6 +17,7 @@ import { GetUser } from './decorators/get-user.decorator';
 import { User } from '@prisma/client';
 import { Auth } from './decorators/auth.decorator';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('auth')
 export class AuthController {
@@ -46,6 +47,14 @@ export class AuthController {
   }
 
   @Post('login')
+  @ApiOperation({ summary: 'login user' })
+  @ApiResponse({
+    status: 201,
+  })
+  @ApiBody({
+    type: LoginUser,
+    description: 'JSON object representing the user to be created',
+  })
   loginWithoutGoogle(@Body() loginData: LoginUser) {
     return this.authService.loginWithoutGoogle(loginData);
   }
