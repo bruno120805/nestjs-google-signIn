@@ -38,7 +38,6 @@ export class AuthService {
     if (!userExists) {
       return this.registerUser(user);
     }
-    console.log(userExists);
 
     return this.generateJwtToken({
       id: userExists.id,
@@ -51,10 +50,18 @@ export class AuthService {
 
     if (!user) throw new NotFoundException('User not found');
 
-    if (!bcrypt.compare(loginData.password, user.password))
+    if (!bcrypt.compareSync(loginData.password, user.password))
       throw new BadRequestException('Invalid credentials');
 
-    return user;
+    const accessToken = this.generateJwtToken({
+      id: user.id,
+      email: user.email,
+    });
+
+    return {
+      ...user,
+      accessToken,
+    };
   }
 
   async registerUserWithoutGoogle(userData: RegisterUserDto) {

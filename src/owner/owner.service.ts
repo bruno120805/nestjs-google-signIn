@@ -8,6 +8,7 @@ import { CreateOwnerDto } from './dto/create-owner.dto';
 import { UpdateOwnerDto } from './dto/update-owner.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { AvailablePets } from './enums/available.enum';
+import { UserInCharge } from '@prisma/client';
 
 @Injectable()
 export class OwnerService {
@@ -81,15 +82,42 @@ export class OwnerService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} owner`;
+  async findOneOwner(id: string): Promise<UserInCharge> {
+    try {
+      const owner = await this.prisma.userInCharge.findUnique({
+        where: {
+          id,
+        },
+      });
+      if (!owner) throw new NotFoundException('Owner not found');
+
+      return owner;
+    } catch (error) {
+      if (error instanceof NotFoundException)
+        throw new NotFoundException(error.message);
+
+      console.log(error);
+      throw new InternalServerErrorException();
+    }
   }
 
-  update(id: number, updateOwnerDto: UpdateOwnerDto) {
-    return `This action updates a #${id} owner`;
+  async update(
+    id: string,
+    updateOwnerDto: UpdateOwnerDto,
+  ): Promise<UserInCharge> {
+    await this.findOneOwner(id);
+
+    const updatedOwner = await this.prisma.userInCharge.update({
+      where: { id },
+      data: updateOwnerDto,
+    });
+
+    return updatedOwner;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} owner`;
+  async remove(id: string) {
+    return await this.prisma.userInCharge.delete({
+      where: { id },
+    });
   }
 }

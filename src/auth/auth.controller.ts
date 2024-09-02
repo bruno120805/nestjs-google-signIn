@@ -13,6 +13,10 @@ import { GoogleOAuthGuard } from './guards/google-oauth.guard';
 import { Response } from 'express';
 import { LoginUser } from './dtos/login-user.dto';
 import { RegisterUserDto } from './dtos/register-user.dot';
+import { GetUser } from './decorators/get-user.decorator';
+import { User } from '@prisma/client';
+import { Auth } from './decorators/auth.decorator';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -45,4 +49,14 @@ export class AuthController {
   loginWithoutGoogle(@Body() loginData: LoginUser) {
     return this.authService.loginWithoutGoogle(loginData);
   }
+
+  @Get('test')
+  @Auth('user')
+  @UseGuards(JwtAuthGuard)
+  test(@GetUser() user: User) {
+    console.log(user);
+  }
+
+  // @Post('validate-token')
+  // revalidateToken()
 }

@@ -8,7 +8,4 @@ export class LoginUser {
   @IsString()
   @MinLength(2)
   password: string;
-
-  @IsString()
-  accessToken: string;
 }
